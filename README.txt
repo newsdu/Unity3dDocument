@@ -1,6 +1,7 @@
 Unity3d Document is very useful in unity3d scripting.
 
 github : https://github.com/newsdu/Unity3dDocument
+visual studio gallary : https://visualstudiogallery.msdn.microsoft.com/57488742-61b1-4d20-a988-34faf5329575
 
 ------------------------- How to use ------------------------------------
 
