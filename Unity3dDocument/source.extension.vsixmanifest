@@ -5,7 +5,7 @@
     <DisplayName>Unity3d Document</DisplayName>
     <Description xml:space="preserve">This helps that you can ask for the word to local/website document easily.
 And also helps that you can ask for the word to google/naver website easily.</Description>
-    <License>LICENSE.md</License>
+    <License>LICENSE.txt</License>
   </Metadata>
   <Installation InstalledByMsi="false">
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[11.0, 12.0]" />
