@@ -36,7 +36,27 @@ namespace newsdu.Unity3dDocument
     [Guid(GuidList.guidUnity3dDocumentPkgString)]
     public sealed class Unity3dDocumentPackage : Package
 	{
-		#region Instance Constructor
+		#region Constant Values
+
+		const string MANUAL_PATH = "Editor\\Data\\Documentation\\html\\en\\ScriptReference\\";
+		const string MANUAL_INDEX_PATH = MANUAL_PATH + "index.html";
+		const string MANUAL_30_SEARCH_PATH = MANUAL_PATH + "30_search.html";
+
+		const string MANUAL_PATH_UNITY5 = "Editor\\Data\\Documentation\\en\\ScriptReference\\";
+		const string MANUAL_INDEX_PATH_UNITY5 = MANUAL_PATH_UNITY5 + "index.html";
+		const string MANUAL_30_SEARCH_PATH_UNITY5 = MANUAL_PATH_UNITY5 + "30_search.html";
+
+		const string LOCAL_QUERY_PREFIX = "\"file:///{0}/Editor/Data/Documentation/html/en/ScriptReference/";
+		const string LOCAL_QUERY_SEARCH_FORMAT = LOCAL_QUERY_PREFIX + "30_search.html?q={1}\"";
+		const string LOCAL_QUERY_INDEX_FORMAT = LOCAL_QUERY_PREFIX + "index.html\"";
+		const string LOCAL_QUERY_PREFIX_UNITY5 = "\"file:///{0}/Editor/Data/Documentation/en/ScriptReference/";
+		const string LOCAL_QUERY_SEARCH_FORMAT_UNITY5 = LOCAL_QUERY_PREFIX_UNITY5 + "30_search.html?q={1}\"";
+		const string LOCAL_QUERY_INDEX_FORMAT_UNITY5 = LOCAL_QUERY_PREFIX_UNITY5 + "index.html\"";
+
+		#endregion
+
+
+		#region Constructor
 
 		/// <summary>
         /// Default constructor of the package.
@@ -51,7 +71,7 @@ namespace newsdu.Unity3dDocument
 
 		#endregion
 
-		#region Instance Private Members
+		#region Private Members
 
 		[Serializable]
         public class Option
@@ -89,9 +109,11 @@ namespace newsdu.Unity3dDocument
 			}
 		}
 
+		bool isUnity5 = false;
+
 		#endregion
 
-		#region Instance Internal Methods
+		#region Private Methods
 
 		private void LoadOption()
         {
@@ -155,10 +177,29 @@ namespace newsdu.Unity3dDocument
 			}
 		}
 
-		static public bool CheckUnity3dPath(string _path)
+		private bool CheckUnity3dPath(string _path)
 		{
-			return  File.Exists(Path.Combine(_path, "Editor\\Data\\Documentation\\html\\en\\ScriptReference\\index.html")) &&
-					File.Exists(Path.Combine(_path, "Editor\\Data\\Documentation\\html\\en\\ScriptReference\\30_search.html"));
+			isUnity5 = false;
+			if (CheckUnityDocument(_path))
+				return true;
+			if (CheckUnityDocumentUnity5(_path))
+			{
+				isUnity5 = true;
+				return true;
+			}
+			return false;
+		}
+
+		private bool CheckUnityDocument(string _path)
+		{
+			return File.Exists(Path.Combine(_path, MANUAL_INDEX_PATH)) &&
+					File.Exists(Path.Combine(_path, MANUAL_30_SEARCH_PATH));
+		}
+
+		private bool CheckUnityDocumentUnity5(string _path)
+		{
+			return File.Exists(Path.Combine(_path, MANUAL_INDEX_PATH_UNITY5)) &&
+					File.Exists(Path.Combine(_path, MANUAL_30_SEARCH_PATH_UNITY5));
 		}
 
 		private string GetQueryString()
@@ -225,19 +266,16 @@ namespace newsdu.Unity3dDocument
                 return;
 
 			string fullPath;
+			string searchFormat = isUnity5 ? LOCAL_QUERY_SEARCH_FORMAT_UNITY5 : LOCAL_QUERY_SEARCH_FORMAT;
+			string indexFormat = isUnity5 ? LOCAL_QUERY_INDEX_FORMAT_UNITY5 : LOCAL_QUERY_INDEX_FORMAT;
 			if (!string.IsNullOrEmpty(_queryString))
 			{
 				string queryTrim = _queryString.Trim();
-				fullPath = string.Format(
-					"\"file:///{0}\\Editor\\Data\\Documentation\\html\\en\\ScriptReference\\30_search.html?q={1}\"", 
-					m_option.unity3dPath,
-					WebUtility.UrlEncode(queryTrim));
+				fullPath = string.Format(searchFormat, m_option.unity3dPath, WebUtility.UrlEncode(queryTrim));
 			}
 			else
 			{
-                fullPath = 
-					string.Format("\"file:///{0}\\Editor\\Data\\Documentation\\html\\en\\ScriptReference\\index.html\"", 
-					m_option.unity3dPath);
+                fullPath = string.Format(indexFormat, m_option.unity3dPath);
 			}
             Process.Start(m_option.webBrowserPath, fullPath);
 		}
